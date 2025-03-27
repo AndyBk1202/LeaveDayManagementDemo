@@ -22,6 +22,12 @@ public class ApiResponse{
     String token;
     String role;
     String expirationTime;
+
+    //Pagination information
+    private Integer currentPage;
+    private Integer totalPages;
+    private Long totalElements;
+
     User user;
     UserDTO userDTO;
     List<UserDTO> userDTOList;
