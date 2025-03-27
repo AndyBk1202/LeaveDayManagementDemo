@@ -17,7 +17,9 @@ import java.util.List;
 public class ApiResponse{
     int status;
     String message;
-
+    String token;
+    String role;
+    String expirationTime;
     User user;
     UserDTO userDTO;
     List<UserDTO> userDTOList;
