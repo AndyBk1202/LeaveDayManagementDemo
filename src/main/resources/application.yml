@@ -10,5 +10,18 @@ spring:
     database-platform: org.hibernate.dialect.MySQL8Dialect
     hibernate:
       ddl-auto: update
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: nguyencongthanh2406@gmail.com
+    password: nsqhwjrvowpqfrge
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+        debug: true
+
 jwt:
   secret-key: "AplusplusHK242SCRUM_PROJECT12345678"
