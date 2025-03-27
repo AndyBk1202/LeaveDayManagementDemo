@@ -4,7 +4,9 @@ import APlusPlus.LeaveDayManagementDemo.DTO.LeaveRequestDTO;
 import APlusPlus.LeaveDayManagementDemo.Utils.EmailService;
 import APlusPlus.LeaveDayManagementDemo.exception.OurException;
 import APlusPlus.LeaveDayManagementDemo.model.LeaveRequest;
+import APlusPlus.LeaveDayManagementDemo.model.User;
 import APlusPlus.LeaveDayManagementDemo.repository.LeaveRequestRepository;
+import APlusPlus.LeaveDayManagementDemo.repository.UserRepository;
 import APlusPlus.LeaveDayManagementDemo.response.ApiResponse;
 import APlusPlus.LeaveDayManagementDemo.service.inter.ILeaveRequestService;
 import lombok.AccessLevel;
@@ -13,10 +15,12 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.Collections;
 
 @Service
 @RequiredArgsConstructor
@@ -24,6 +28,92 @@ import java.util.stream.Collectors;
 public class LeaveRequestService implements ILeaveRequestService {
     LeaveRequestRepository leaveRequestRepository;
     EmailService emailService;
+    UserRepository userRepository;
+
+    @Override
+    public ApiResponse getLeaveRequestById(long id) {
+        ApiResponse response = new ApiResponse();
+        try {
+            LeaveRequest leaveRequest = leaveRequestRepository.findById(id)
+                    .orElseThrow(() -> new OurException("Leave Request Not Found"));
+
+            // Chuyển đổi trực tiếp thay vì gọi convertToDTO
+            LeaveRequestDTO dto = new LeaveRequestDTO(
+                    leaveRequest.getId(),
+                    leaveRequest.getStartDate(),
+                    leaveRequest.getEndDate(),
+                    leaveRequest.getReason(),
+                    leaveRequest.getStatus(),
+                    leaveRequest.getUser().getEmail());
+
+            response.setStatus(200);
+            response.setMessage("Leave request fetched successfully");
+            response.setLeaveRequestDTOList(Collections.singletonList(dto));
+        } catch (OurException e) {
+            response.setStatus(404);
+            response.setMessage(e.getMessage());
+        } catch (Exception e) {
+            response.setStatus(500);
+            response.setMessage("Error fetching leave request: " + e.getMessage());
+        }
+        return response;
+    }
+
+    @Override
+    @Transactional
+    public ApiResponse sendLeaveRequest(long userId, LeaveRequest request) {
+        ApiResponse response = new ApiResponse();
+        try {
+            User user = userRepository.findById(userId)
+                    .orElseThrow(() -> new OurException("User Not Found"));
+            request.setUser(user);
+            request.setStatus("Pending");
+            leaveRequestRepository.save(request);
+
+            response.setStatus(200);
+            response.setMessage("Leave request submitted successfully");
+        } catch (OurException e) {
+            response.setStatus(404);
+            response.setMessage(e.getMessage());
+        } catch (Exception e) {
+            response.setStatus(500);
+            response.setMessage("Error submitting leave request: " + e.getMessage());
+        }
+        return response;
+    }
+
+    @Override
+    @Transactional
+    public ApiResponse updateLeaveRequest(long id, LeaveRequest updatedRequest) {
+        ApiResponse response = new ApiResponse();
+        try {
+            LeaveRequest existingRequest = leaveRequestRepository.findById(id)
+                    .orElseThrow(() -> new OurException("Leave Request Not Found"));
+
+            if (existingRequest.getStatus().equalsIgnoreCase("ACCEPTED")) {
+                throw new OurException("Leave request has already been accepted and cannot be updated");
+            }
+            if (existingRequest.getStatus().equalsIgnoreCase("REJECTED")) {
+                throw new OurException("Leave request has already been rejected and cannot be updated");
+            }
+
+            existingRequest.setStartDate(updatedRequest.getStartDate());
+            existingRequest.setEndDate(updatedRequest.getEndDate());
+            existingRequest.setReason(updatedRequest.getReason());
+            existingRequest.setStatus(updatedRequest.getStatus());
+
+            leaveRequestRepository.save(existingRequest);
+            response.setStatus(200);
+            response.setMessage("Leave request updated successfully");
+        } catch (OurException e) {
+            response.setStatus(404);
+            response.setMessage(e.getMessage());
+        } catch (Exception e) {
+            response.setStatus(500);
+            response.setMessage("Error updating leave request: " + e.getMessage());
+        }
+        return response;
+    }
 
     @Override
     public ApiResponse getAllRequest(Pageable pageable) {
@@ -84,8 +174,9 @@ public class LeaveRequestService implements ILeaveRequestService {
     @Override
     public ApiResponse getLeaveRequestsByDateRange(LocalDate startDate, LocalDate endDate, Pageable pageable) {
         ApiResponse response = new ApiResponse();
-        try{
-            Page<LeaveRequest> leaveRequestPage = leaveRequestRepository.getAllByDateRange(startDate, endDate, pageable);
+        try {
+            Page<LeaveRequest> leaveRequestPage = leaveRequestRepository.getAllByDateRange(startDate, endDate,
+                    pageable);
             List<LeaveRequestDTO> leaveRequestDTOList = leaveRequestPage.getContent().stream()
                     .map(leaveRequest -> new LeaveRequestDTO(
                             leaveRequest.getId(),
@@ -102,10 +193,10 @@ public class LeaveRequestService implements ILeaveRequestService {
             response.setMessage("Get all leave requests successfully");
             response.setLeaveRequestDTOList(leaveRequestDTOList);
             return response;
-        } catch (OurException e){
+        } catch (OurException e) {
             response.setStatus(400);
             response.setMessage(e.getMessage());
-        } catch (Exception e){
+        } catch (Exception e) {
             response.setStatus(500);
             response.setMessage(e.getMessage());
         }
@@ -115,7 +206,7 @@ public class LeaveRequestService implements ILeaveRequestService {
     @Override
     public ApiResponse getLeaveRequestsByUserId(long userId, Pageable pageable) {
         ApiResponse response = new ApiResponse();
-        try{
+        try {
             Page<LeaveRequest> leaveRequestPage = leaveRequestRepository.getAllByUserId(userId, pageable);
             List<LeaveRequestDTO> leaveRequestDTOList = leaveRequestPage.getContent().stream()
                     .map(leaveRequest -> new LeaveRequestDTO(
@@ -133,10 +224,10 @@ public class LeaveRequestService implements ILeaveRequestService {
             response.setMessage("Get all leave requests successfully");
             response.setLeaveRequestDTOList(leaveRequestDTOList);
             return response;
-        } catch (OurException e){
+        } catch (OurException e) {
             response.setStatus(400);
             response.setMessage(e.getMessage());
-        } catch (Exception e){
+        } catch (Exception e) {
             response.setStatus(500);
             response.setMessage(e.getMessage());
         }
