@@ -25,13 +25,13 @@ public class LeaveRequestController {
 
     @GetMapping("/accept/{id}")
     public ResponseEntity<ApiResponse> acceptRequest(@PathVariable long id) {
-        ApiResponse response = leaveRequestService.acceptRequest(id);
+        ApiResponse response = leaveRequestService.handleRequest(id, "ACCEPTED");
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 
     @GetMapping("/reject/{id}")
     public ResponseEntity<ApiResponse> rejectRequest(@PathVariable long id){
-        ApiResponse response = leaveRequestService.acceptRequest(id);
+        ApiResponse response = leaveRequestService.handleRequest(id, "REJECTED");
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 

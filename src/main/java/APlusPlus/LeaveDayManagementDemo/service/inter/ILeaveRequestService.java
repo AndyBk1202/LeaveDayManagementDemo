@@ -6,6 +6,5 @@ import org.springframework.data.domain.Pageable;
 
 public interface ILeaveRequestService {
     public ApiResponse getAllRequest(Pageable pageable);
-    public ApiResponse acceptRequest(long id);
-    public ApiResponse rejectRequest(long id);
+    public ApiResponse handleRequest(long id, String status);
 }
