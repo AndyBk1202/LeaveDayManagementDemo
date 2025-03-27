@@ -10,3 +10,5 @@ spring:
     database-platform: org.hibernate.dialect.MySQL8Dialect
     hibernate:
       ddl-auto: update
+jwt:
+  secret-key: "AplusplusHK242SCRUM_PROJECT12345678"
