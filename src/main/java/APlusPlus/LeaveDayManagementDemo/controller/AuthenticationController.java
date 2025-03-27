@@ -5,6 +5,7 @@ import APlusPlus.LeaveDayManagementDemo.model.User;
 import APlusPlus.LeaveDayManagementDemo.response.ApiResponse;
 import APlusPlus.LeaveDayManagementDemo.service.impl.UserService;
 import APlusPlus.LeaveDayManagementDemo.service.inter.IUserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -20,13 +21,13 @@ public class  AuthenticationController {
     private final IUserService userService;
 
     @PostMapping("/register")
-    private ResponseEntity<ApiResponse> register(@RequestBody User user){
+    private ResponseEntity<ApiResponse> register(@Valid @RequestBody User user){
         ApiResponse response = userService.register(user);
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<ApiResponse> login(@RequestBody LoginRequest loginRequest){
+    public ResponseEntity<ApiResponse> login(@Valid @RequestBody LoginRequest loginRequest){
         ApiResponse response = userService.login(loginRequest);
         return ResponseEntity.status(response.getStatus()).body(response);
     }
