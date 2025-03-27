@@ -37,6 +37,7 @@ public class UserService implements IUserService {
         try{
             if(user.getRole() == null || user.getRole().isBlank()){
                 user.setRole("EMPLOYEE");
+                user.setLeaveDays(12);
             }
 
             if(userRepository.existsByEmail(user.getUsername())){
@@ -80,30 +81,6 @@ public class UserService implements IUserService {
         } catch (Exception e){
             response.setStatus(500);
             response.setMessage("Error Occurs During User Login: " + e.getMessage());
-        }
-        return response;
-    }
-
-    @Override
-    public ApiResponse addUser(UserDTO request) {
-        ApiResponse response = new ApiResponse();
-        try {
-            if (userRepository.existsByEmail(request.getEmail())) {
-                throw new OurException("Email is already in use");
-            }
-            User user = new User();
-            user.setRole("EMPLOYEE");
-            user.setEmail(request.getEmail());
-            user.setName(request.getName());
-            user.setPassword(request.getPassword());
-            userRepository.save(user);
-
-            response.setStatus(200);
-            response.setMessage("User added successfully");
-
-        } catch (Exception e) {
-            response.setStatus(401);
-            response.setMessage(e.getMessage());
         }
         return response;
     }

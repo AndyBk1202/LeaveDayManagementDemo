@@ -9,7 +9,6 @@ import org.springframework.data.domain.Pageable;
 public interface IUserService {
     public ApiResponse register(User user);
     public ApiResponse login(LoginRequest loginRequest);
-    public ApiResponse addUser(UserDTO request);
     public ApiResponse updateUser(UserDTO userDTO);
     public ApiResponse deleteUser(long id);
     public ApiResponse viewUser(Long id);

@@ -2,9 +2,9 @@ spring:
   application:
     name=LeaveDayManagement
   datasource:
-    url: jdbc:mysql://employees-leave-management-system-hcmut-e35d.f.aivencloud.com:10600/defaultdb
+    url: jdbc:mysql://mysql-15ac9fa2-hcmut-5139.c.aivencloud.com:26104/defaultdb
     username: avnadmin
-    password: AVNS_qA-uHmmQBr3AeLlOXeX
+    password: AVNS_alF4Nbi7tGGFzj_WkrI
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     database-platform: org.hibernate.dialect.MySQL8Dialect

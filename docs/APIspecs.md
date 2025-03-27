@@ -1,14 +1,14 @@
 ## API Specification
 
-### Users APIs
+### Authentication APIs
 
 #### 1. Register user
-- **URL**: `POST /users/add`
-- **Description**: Thêm tài khoản người dùng.
+- **URL**: `POST /auth/register`
+- **Description**: Đăng kí tài khoản người dùng.
 - **Request Body**:
   ```json
   {
-     "email": "Nguyen Cong Thanh",
+     "name": "Nguyen Cong Thanh",
      "email": "johndoe10@example.com",
      "password": "securepassword"
   }
@@ -18,19 +18,60 @@
       ```json
       {
           "status": 200,
-          "message": "Add user successfully"
+          "message": "Register successfully"
       }
       ```
-    - `401 User existed`
+    - `400 User existed`
+      ```json
+      {
+         "status": 400,
+         "message": "This username already existed, please choose another username"     
+      }
+      ```
+
+#### 2. Login user
+- **URL**: `POST /auth/login`
+- **Description**: Đăng nhập tài khoản người dùng.
+- **Request Body**:
+  ```json
+  {
+     "email": "johndoe10@example.com",
+     "password": "securepassword"
+  }
+  ```
+- **Response**:
+    - `200 OK`: Login successfully.
+      ```json
+      {
+          "status": 200,
+          "message": "Register successfully"
+      }
+      ```
+    - `401 Bad Credentials`
       ```json
       {
          "status": 401,
-         "message": "Email is already in use"     
+         "message": "Invalid username or password"     
       }
       ```
-  
+    - `404 User not found`
+      ```json
+      {
+         "status": 404,
+         "message": "Username not found"     
+      }
+      ```
+  - `500 Exceptional error`
+    ```json
+    {
+       "status": 500,
+       "message": "Error Occurs During User Login: "     
+    }
+    ```
+    
+### Users APIs
 
-#### 2. Update user
+#### 1. Update user
 - **URL**: `PUT /users/update`
 - **Description**: Cập nhật người dùng.
 - **Request Body**:
@@ -64,7 +105,7 @@
         }
         ```
 
-#### 3. Delete users
+#### 2. Delete users
 - **URL**: `DELETE users/delete/{id}`
 - **Description**: Xóa người dùng.
 - **Path variable**: long id
@@ -84,7 +125,7 @@
           }
         ```
 
-#### 4. View 1 User
+#### 3. View 1 User
 - **URL**: `GET users/view/{id}`
 - **Description**: Xem 1 người dùng.
 - **Path variable**: long id
