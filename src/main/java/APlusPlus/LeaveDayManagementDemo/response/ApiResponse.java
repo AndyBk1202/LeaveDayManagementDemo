@@ -1,6 +1,8 @@
 package APlusPlus.LeaveDayManagementDemo.response;
 
+import APlusPlus.LeaveDayManagementDemo.DTO.LeaveRequestDTO;
 import APlusPlus.LeaveDayManagementDemo.DTO.UserDTO;
+import APlusPlus.LeaveDayManagementDemo.model.LeaveRequest;
 import APlusPlus.LeaveDayManagementDemo.model.User;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AccessLevel;
@@ -23,4 +25,5 @@ public class ApiResponse{
     User user;
     UserDTO userDTO;
     List<UserDTO> userDTOList;
+    List<LeaveRequestDTO> leaveRequestDTOList;
 }

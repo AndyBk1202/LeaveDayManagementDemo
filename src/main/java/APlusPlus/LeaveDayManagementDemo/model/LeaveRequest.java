@@ -1,5 +1,6 @@
 package APlusPlus.LeaveDayManagementDemo.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -23,5 +24,6 @@ public class LeaveRequest {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
+    @JsonIgnore
     User user;
 }
