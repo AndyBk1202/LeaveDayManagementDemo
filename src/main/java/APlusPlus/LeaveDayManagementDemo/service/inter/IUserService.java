@@ -13,4 +13,5 @@ public interface IUserService {
     public ApiResponse deleteUser(long id);
     public ApiResponse viewUser(Long id);
     public ApiResponse viewAllUser(Pageable pageable);
+    public User getDetailFromToken(String token);
 }

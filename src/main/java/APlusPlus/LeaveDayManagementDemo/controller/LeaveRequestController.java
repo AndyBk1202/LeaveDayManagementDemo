@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -23,10 +24,11 @@ public class LeaveRequestController {
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 
-    @PostMapping("/send/{userId}")
-    public ResponseEntity<ApiResponse> sendLeaveRequest(@PathVariable Long userId,
+    @PostMapping("/send")
+    public ResponseEntity<ApiResponse> sendLeaveRequest(@RequestHeader(value = "Authorization") String authHeader,
             @RequestBody LeaveRequest leaveRequest) {
-        ApiResponse response = leaveRequestService.sendLeaveRequest(userId, leaveRequest);
+        String token = authHeader.substring(7);
+        ApiResponse response = leaveRequestService.sendLeaveRequest(token, leaveRequest);
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 
@@ -42,7 +44,7 @@ public class LeaveRequestController {
         ApiResponse response = leaveRequestService.deleteLeaveRequest(id);
         return ResponseEntity.status(response.getStatus()).body(response);
     }
-
+    @PreAuthorize("hasAuthority('MANAGER')")
     @GetMapping("/view")
     public ResponseEntity<ApiResponse> getAllRequest(
             @RequestParam(defaultValue = "0") int page,
@@ -51,19 +53,19 @@ public class LeaveRequestController {
         ApiResponse response = leaveRequestService.getAllRequest(pageable);
         return ResponseEntity.status(response.getStatus()).body(response);
     }
-
+    @PreAuthorize("hasAuthority('MANAGER')")
     @GetMapping("/accept/{id}")
     public ResponseEntity<ApiResponse> acceptRequest(@PathVariable long id) {
         ApiResponse response = leaveRequestService.handleRequest(id, "ACCEPTED");
         return ResponseEntity.status(response.getStatus()).body(response);
     }
-
+    @PreAuthorize("hasAuthority('MANAGER')")
     @GetMapping("/reject/{id}")
     public ResponseEntity<ApiResponse> rejectRequest(@PathVariable long id) {
         ApiResponse response = leaveRequestService.handleRequest(id, "REJECTED");
         return ResponseEntity.status(response.getStatus()).body(response);
     }
-
+    @PreAuthorize("hasAuthority('MANAGER')")
     @GetMapping("/view-by-date-range")
     public ResponseEntity<ApiResponse> getLeaveRequestsByDateRange(@RequestParam LocalDate startDate,
             @RequestParam LocalDate endDate,
@@ -73,7 +75,7 @@ public class LeaveRequestController {
         ApiResponse response = leaveRequestService.getLeaveRequestsByDateRange(startDate, endDate, pageable);
         return ResponseEntity.status(response.getStatus()).body(response);
     }
-
+    @PreAuthorize("hasAuthority('MANAGER')")
     @GetMapping("/view-by-user-id/{userId}")
     public ResponseEntity<ApiResponse> getLeaveRequestsByUserId(@PathVariable long userId,
             @RequestParam(defaultValue = "0") int page,

@@ -9,6 +9,7 @@ import APlusPlus.LeaveDayManagementDemo.repository.LeaveRequestRepository;
 import APlusPlus.LeaveDayManagementDemo.repository.UserRepository;
 import APlusPlus.LeaveDayManagementDemo.response.ApiResponse;
 import APlusPlus.LeaveDayManagementDemo.service.inter.ILeaveRequestService;
+import APlusPlus.LeaveDayManagementDemo.service.inter.IUserService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -31,7 +32,7 @@ public class LeaveRequestService implements ILeaveRequestService {
     LeaveRequestRepository leaveRequestRepository;
     EmailService emailService;
     UserRepository userRepository;
-
+    IUserService userService;
     @Override
     public ApiResponse getLeaveRequestById(long id) {
         ApiResponse response = new ApiResponse();
@@ -86,13 +87,12 @@ public class LeaveRequestService implements ILeaveRequestService {
 
     @Override
     @Transactional
-    public ApiResponse sendLeaveRequest(long userId, LeaveRequest request) {
+    public ApiResponse sendLeaveRequest(String token, LeaveRequest request) {
         ApiResponse response = new ApiResponse();
         try {
-            User user = userRepository.findById(userId)
-                    .orElseThrow(() -> new OurException("User Not Found"));
+            User user = userService.getDetailFromToken(token);
             request.setUser(user);
-            request.setStatus("Pending");
+            request.setStatus("PENDING");
             request.setStartDate(request.getStartDate());
             request.setEndDate(request.getEndDate());
             if (request.getStartDate().isAfter(request.getEndDate())) {
@@ -164,7 +164,9 @@ public class LeaveRequestService implements ILeaveRequestService {
                             leaveRequest.getStatus(),
                             leaveRequest.getUser().getEmail()))
                     .collect(Collectors.toList());
-
+            response.setCurrentPage(leaveRequests.getNumber());
+            response.setTotalElements(leaveRequests.getTotalElements());
+            response.setTotalPages(leaveRequests.getTotalPages());
             response.setStatus(200);
             response.setMessage("Fetching all leave requests successfully");
             response.setLeaveRequestDTOList(leaveRequestDTOList);
