@@ -21,6 +21,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -162,10 +163,33 @@ public class UserService implements IUserService {
                 .collect(Collectors.toList());
 
         ApiResponse apiResponse = new ApiResponse();
+        apiResponse.setCurrentPage(users.getNumber());
+        apiResponse.setTotalElements(users.getTotalElements());
+        apiResponse.setTotalPages(users.getTotalPages());
         apiResponse.setUserDTOList(userDTOList);
         apiResponse.setStatus(200);
         apiResponse.setMessage("User found");
 
         return apiResponse;
+    }
+
+    @Override
+    public User getDetailFromToken(String token) {
+
+        if (jwtUtils.isTokenExpired(token)) {
+            throw new OurException("Token is expired");
+        }
+
+        String subject = jwtUtils.getSubject(token);
+        if (subject == null) {
+            throw new OurException("Something went wrong in JWT extraction");
+        }
+
+        Optional<User> user = userRepository.findByEmail(subject);
+        if (user.isEmpty()) {
+            throw new OurException("User not found");
+        }
+
+        return user.get();
     }
 }
