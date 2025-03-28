@@ -53,4 +53,9 @@ public class JwtUtils {
         String extractedUsername = extractUsername(token);
         return (extractedUsername.equals(username) && !isTokenExpired(token));
     }
+
+    public String getSubject(String token) {
+        return extractClaim(token, Claims::getSubject);
+    }
+
 }
