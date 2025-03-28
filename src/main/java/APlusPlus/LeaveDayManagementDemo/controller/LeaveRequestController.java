@@ -4,7 +4,6 @@ import APlusPlus.LeaveDayManagementDemo.model.LeaveRequest;
 import APlusPlus.LeaveDayManagementDemo.response.ApiResponse;
 import APlusPlus.LeaveDayManagementDemo.service.inter.ILeaveRequestService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -35,6 +34,12 @@ public class LeaveRequestController {
     public ResponseEntity<ApiResponse> updateLeaveRequest(@PathVariable Long id,
             @RequestBody LeaveRequest leaveRequest) {
         ApiResponse response = leaveRequestService.updateLeaveRequest(id, leaveRequest);
+        return ResponseEntity.status(response.getStatus()).body(response);
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<ApiResponse> deleteLeaveRequest(@PathVariable Long id) {
+        ApiResponse response = leaveRequestService.deleteLeaveRequest(id);
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 
@@ -75,6 +80,25 @@ public class LeaveRequestController {
             @RequestParam(defaultValue = "5") int size) {
         Pageable pageable = PageRequest.of(page, size);
         ApiResponse response = leaveRequestService.getLeaveRequestsByUserId(userId, pageable);
+        return ResponseEntity.status(response.getStatus()).body(response);
+    }
+
+    @GetMapping("/employee/view")
+    public ResponseEntity<ApiResponse> getLeaveRequestsByCurrentUser(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        ApiResponse response = leaveRequestService.getLeaveRequestByCurrentEmployee(pageable);
+        return ResponseEntity.status(response.getStatus()).body(response);
+    }
+
+    @GetMapping("employee/view-by-date-range")
+    public ResponseEntity<ApiResponse> getLeaveRequestsByCurrentUser(@RequestParam LocalDate startDate,
+                                                                     @RequestParam LocalDate endDate,
+                                                                     @RequestParam(defaultValue = "0") int page,
+                                                                     @RequestParam(defaultValue = "5") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        ApiResponse response = leaveRequestService.getLeaveRequestByCurrentEmployeeAndDateRange(startDate, endDate, pageable);
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 }

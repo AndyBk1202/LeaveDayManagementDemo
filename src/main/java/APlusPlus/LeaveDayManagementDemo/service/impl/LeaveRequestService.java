@@ -14,6 +14,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -60,6 +62,29 @@ public class LeaveRequestService implements ILeaveRequestService {
     }
 
     @Override
+    public ApiResponse deleteLeaveRequest(long id) {
+        ApiResponse response = new ApiResponse();
+        try {
+            LeaveRequest leaveRequest = leaveRequestRepository.findById(id)
+                    .orElseThrow(() -> new OurException("Leave Request Not Found"));
+
+            if (leaveRequest.getStatus().equalsIgnoreCase("ACCEPTED")) {
+                throw new OurException("Leave request has already been accepted and cannot be deleted");
+            }
+            leaveRequestRepository.delete(leaveRequest);
+            response.setStatus(200);
+            response.setMessage("Leave request deleted successfully");
+        } catch (OurException e) {
+            response.setStatus(404);
+            response.setMessage(e.getMessage());
+        } catch (Exception e) {
+            response.setStatus(500);
+            response.setMessage("Error deleting leave request: " + e.getMessage());
+        }
+        return response;
+    }
+
+    @Override
     @Transactional
     public ApiResponse sendLeaveRequest(long userId, LeaveRequest request) {
         ApiResponse response = new ApiResponse();
@@ -68,6 +93,11 @@ public class LeaveRequestService implements ILeaveRequestService {
                     .orElseThrow(() -> new OurException("User Not Found"));
             request.setUser(user);
             request.setStatus("Pending");
+            request.setStartDate(request.getStartDate());
+            request.setEndDate(request.getEndDate());
+            if (request.getStartDate().isAfter(request.getEndDate())) {
+                throw new OurException("Start date cannot be after end date");
+            }
             leaveRequestRepository.save(request);
 
             response.setStatus(200);
@@ -81,6 +111,8 @@ public class LeaveRequestService implements ILeaveRequestService {
         }
         return response;
     }
+
+
 
     @Override
     @Transactional
@@ -230,6 +262,91 @@ public class LeaveRequestService implements ILeaveRequestService {
         } catch (Exception e) {
             response.setStatus(500);
             response.setMessage(e.getMessage());
+        }
+        return response;
+    }
+
+    @Override
+    public ApiResponse getLeaveRequestByCurrentEmployee(Pageable pageable) {
+        ApiResponse response = new ApiResponse();
+        try {
+            // Get current user from security context
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String username = authentication.getName();
+
+            // Find the user in the database
+            User user = userRepository.findByEmail(username)
+                    .orElseThrow(() -> new OurException("Current authenticated user not found"));
+
+            // Get leave requests for this user
+            Page<LeaveRequest> leaveRequestPage = leaveRequestRepository.getAllByUserId(user.getId(), pageable);
+
+            // Convert to DTOs
+            List<LeaveRequestDTO> leaveRequestDTOList = leaveRequestPage.getContent().stream()
+                    .map(leaveRequest -> new LeaveRequestDTO(
+                            leaveRequest.getId(),
+                            leaveRequest.getStartDate(),
+                            leaveRequest.getEndDate(),
+                            leaveRequest.getReason(),
+                            leaveRequest.getStatus(),
+                            leaveRequest.getUser().getEmail()))
+                    .collect(Collectors.toList());
+
+            response.setCurrentPage(leaveRequestPage.getNumber());
+            response.setTotalElements(leaveRequestPage.getTotalElements());
+            response.setTotalPages(leaveRequestPage.getTotalPages());
+            response.setStatus(200);
+            response.setMessage("Your leave requests retrieved successfully");
+            response.setLeaveRequestDTOList(leaveRequestDTOList);
+        } catch (OurException e) {
+            response.setStatus(404);
+            response.setMessage(e.getMessage());
+        } catch (Exception e) {
+            response.setStatus(500);
+            response.setMessage("Error retrieving leave requests: " + e.getMessage());
+        }
+        return response;
+    }
+
+    @Override
+    public ApiResponse getLeaveRequestByCurrentEmployeeAndDateRange(LocalDate startDate, LocalDate endDate, Pageable pageable) {
+        ApiResponse response = new ApiResponse();
+        try {
+            // Get current user from security context
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String username = authentication.getName();
+
+            // Find the user in the database
+            User user = userRepository.findByEmail(username)
+                    .orElseThrow(() -> new OurException("Current authenticated user not found"));
+
+            // Get leave requests for this user
+            Page<LeaveRequest> leaveRequestPage = leaveRequestRepository.getAllByUserIdAndDateRange(user.getId(),
+                    startDate, endDate, pageable);
+
+            // Convert to DTOs
+            List<LeaveRequestDTO> leaveRequestDTOList = leaveRequestPage.getContent().stream()
+                    .map(leaveRequest -> new LeaveRequestDTO(
+                            leaveRequest.getId(),
+                            leaveRequest.getStartDate(),
+                            leaveRequest.getEndDate(),
+                            leaveRequest.getReason(),
+                            leaveRequest.getStatus(),
+                            leaveRequest.getUser().getEmail()))
+                    .collect(Collectors.toList());
+
+            response.setCurrentPage(leaveRequestPage.getNumber());
+            response.setTotalElements(leaveRequestPage.getTotalElements());
+            response.setTotalPages(leaveRequestPage.getTotalPages());
+            response.setStatus(200);
+            response.setMessage("Your leave requests retrieved successfully");
+            response.setLeaveRequestDTOList(leaveRequestDTOList);
+        } catch (OurException e) {
+            response.setStatus(404);
+            response.setMessage(e.getMessage());
+        } catch (Exception e) {
+            response.setStatus(500);
+            response.setMessage("Error retrieving leave requests: " + e.getMessage());
         }
         return response;
     }
