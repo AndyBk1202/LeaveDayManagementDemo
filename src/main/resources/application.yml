@@ -25,3 +25,6 @@ spring:
 
 jwt:
   secret-key: "AplusplusHK242SCRUM_PROJECT12345678"
+
+server:
+  port: ${PORT:8080}
