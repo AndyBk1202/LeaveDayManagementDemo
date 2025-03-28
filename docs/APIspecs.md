@@ -181,3 +181,100 @@
                 ]
             }
             ```
+
+
+#### 4. Delete Leave Request By ID
+- **URL**: `DELETE leave-requests/delete/{leave_request_id}`
+- **Description**: Xóa leave request.
+- **Path variable**: long id
+- **Response**:
+    - `200 OK`: Deleted successfully.
+      ```json
+      {
+          "status": 200,
+          "message": "Leave request deleted successfully"
+      }
+      ```
+    - `404 Leave Request Not Found`
+        ```json
+          {
+            "statusCode": 404,
+            "message": "Leave Request Not Found"     
+          }
+        ```
+
+
+#### 5. Employee view all its own Leave Requests
+- **URL**: `GET leave-requests/employee/view?page=0&size=5`
+- **Description**: Xem tất cả Leave Request của Employee đang đăng nhập.
+  - **Response**:
+  - **Params (optionally - có param này hay không dều được)**:
+      - *page*: `0 (Default value is 0)`
+      - *size*: `5 (Default value is 5)`
+      - `200 OK`: View successfully.
+        ```json
+        {
+            "status": 200,
+            "message": "Your leave requests retrieved successfully",
+            "currentPage": 0,
+            "totalPages": 1,
+            "totalElements": 2,
+            "leaveRequestDTOList": [
+                {
+                    "id": 1,
+                    "startDate": "2025-03-27",
+                    "endDate": "2025-03-28",
+                    "reason": "Another Vacation",
+                    "status": "Pending",
+                    "userEmail": "johndoe90@example.com"
+                },
+                {
+                    "id": 3,
+                    "startDate": "2025-03-27",
+                    "endDate": "2025-03-28",
+                    "reason": "New Vacation",
+                    "status": "Pending",
+                    "userEmail": "johndoe90@example.com"
+                }
+            ]
+        }
+        ```
+
+
+#### 5. Employee view all its own Leave Requests sorted by Dates
+- **URL**: `GET leave-requests/employee/view?startDate=2025-03-01&endDate=2025-03-30&page=0&size=5`
+- **Description**: Xem tất cả Leave Request của Employee đang đăng nhập.
+- **Params**:
+  - *startDate*: `2025-03-01`
+  - *endDate*: `2025-03-30`
+  - *page*: `0 (Default value is 0) - có param này hay không đều được`
+  - *size*: `5 (Default value is 5) - có param này hay không đều được`
+  - **Response**:
+      - `200 OK`: View successfully.
+        ```json
+        {
+            "status": 200,
+            "message": "Your leave requests retrieved successfully",
+            "currentPage": 0,
+            "totalPages": 1,
+            "totalElements": 2,
+            "leaveRequestDTOList": [
+                {
+                    "id": 1,
+                    "startDate": "2025-03-27",
+                    "endDate": "2025-03-28",
+                    "reason": "Another Vacation",
+                    "status": "Pending",
+                    "userEmail": "johndoe90@example.com"
+                },
+                {
+                    "id": 3,
+                    "startDate": "2025-03-27",
+                    "endDate": "2025-03-28",
+                    "reason": "New Vacation",
+                    "status": "Pending",
+                    "userEmail": "johndoe90@example.com"
+                }
+            ]
+        }
+        ```
