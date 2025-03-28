@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.Collections;
@@ -37,7 +38,6 @@ public class LeaveRequestService implements ILeaveRequestService {
             LeaveRequest leaveRequest = leaveRequestRepository.findById(id)
                     .orElseThrow(() -> new OurException("Leave Request Not Found"));
 
-            // Chuyển đổi trực tiếp thay vì gọi convertToDTO
             LeaveRequestDTO dto = new LeaveRequestDTO(
                     leaveRequest.getId(),
                     leaveRequest.getStartDate(),
@@ -66,8 +66,14 @@ public class LeaveRequestService implements ILeaveRequestService {
         try {
             User user = userRepository.findById(userId)
                     .orElseThrow(() -> new OurException("User Not Found"));
+
+            long requestedDays = ChronoUnit.DAYS.between(request.getStartDate(), request.getEndDate()) + 1;
+            if (requestedDays > user.getLeaveDays()){
+                throw new OurException("Not enough leave days available");
+            }
+
             request.setUser(user);
-            request.setStatus("Pending");
+            request.setStatus("PENDING");
             leaveRequestRepository.save(request);
 
             response.setStatus(200);
