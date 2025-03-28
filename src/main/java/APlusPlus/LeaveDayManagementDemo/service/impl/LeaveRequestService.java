@@ -79,7 +79,11 @@ public class LeaveRequestService implements ILeaveRequestService {
             response.setStatus(200);
             response.setMessage("Leave request submitted successfully");
         } catch (OurException e) {
-            response.setStatus(404);
+            if (e.getMessage().equals("User Not Found")) {
+                response.setStatus(404);
+            } else {
+                response.setStatus(400);
+            }
             response.setMessage(e.getMessage());
         } catch (Exception e) {
             response.setStatus(500);
@@ -119,7 +123,11 @@ public class LeaveRequestService implements ILeaveRequestService {
             response.setStatus(200);
             response.setMessage("Leave request updated successfully");
         } catch (OurException e) {
-            response.setStatus(404);
+            if (e.getMessage().equals("Leave Request Not Found")) {
+                response.setStatus(404);
+            } else {
+                response.setStatus(400);
+            }
             response.setMessage(e.getMessage());
         } catch (Exception e) {
             response.setStatus(500);
