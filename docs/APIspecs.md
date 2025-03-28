@@ -183,7 +183,7 @@
             ```
 
 
-#### 4. Delete Leave Request By ID
+#### 5. Delete Leave Request By ID
 - **URL**: `DELETE leave-requests/delete/{leave_request_id}`
 - **Description**: Xóa leave request.
 - **Path variable**: long id
@@ -204,7 +204,7 @@
         ```
 
 
-#### 5. Employee view all its own Leave Requests
+#### 6. Employee view all its own Leave Requests
 - **URL**: `GET leave-requests/employee/view?page=0&size=5`
 - **Description**: Xem tất cả Leave Request của Employee đang đăng nhập.
   - **Response**:
@@ -241,7 +241,7 @@
         ```
 
 
-#### 5. Employee view all its own Leave Requests sorted by Dates
+#### 7. Employee view all its own Leave Requests sorted by Dates
 - **URL**: `GET leave-requests/employee/view?startDate=2025-03-01&endDate=2025-03-30&page=0&size=5`
 - **Description**: Xem tất cả Leave Request của Employee đang đăng nhập.
 - **Params**:
