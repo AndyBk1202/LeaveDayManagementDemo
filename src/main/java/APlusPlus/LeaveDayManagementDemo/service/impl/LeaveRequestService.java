@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.Collections;
@@ -98,6 +99,11 @@ public class LeaveRequestService implements ILeaveRequestService {
             if (request.getStartDate().isAfter(request.getEndDate())) {
                 throw new OurException("Start date cannot be after end date");
             }
+            long requestedDays = ChronoUnit.DAYS.between(request.getStartDate(), request.getEndDate()) + 1;
+            if (requestedDays > user.getLeaveDays()){
+                throw new OurException("Not enough leave days available");
+            }
+
             leaveRequestRepository.save(request);
 
             response.setStatus(200);
@@ -129,10 +135,16 @@ public class LeaveRequestService implements ILeaveRequestService {
                 throw new OurException("Leave request has already been rejected and cannot be updated");
             }
 
+            User user = existingRequest.getUser();
+            long requestedDays = ChronoUnit.DAYS.between(updatedRequest.getStartDate(), updatedRequest.getEndDate()) + 1;
+            if (requestedDays > user.getLeaveDays()){
+                throw new OurException("Not enough leave days available to update the request");
+            }
+
             existingRequest.setStartDate(updatedRequest.getStartDate());
             existingRequest.setEndDate(updatedRequest.getEndDate());
             existingRequest.setReason(updatedRequest.getReason());
-            existingRequest.setStatus(updatedRequest.getStatus());
+            existingRequest.setStatus(updatedRequest.getStatus() == null ? "PENDING" : updatedRequest.getStatus());
 
             leaveRequestRepository.save(existingRequest);
             response.setStatus(200);
