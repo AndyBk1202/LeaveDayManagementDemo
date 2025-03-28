@@ -96,17 +96,24 @@ public class LeaveRequestService implements ILeaveRequestService {
             LeaveRequest existingRequest = leaveRequestRepository.findById(id)
                     .orElseThrow(() -> new OurException("Leave Request Not Found"));
 
+                    // "ACCEPTED".equalsIgnoreCase(existingRequest.getStatus())
             if (existingRequest.getStatus().equalsIgnoreCase("ACCEPTED")) {
                 throw new OurException("Leave request has already been accepted and cannot be updated");
             }
             if (existingRequest.getStatus().equalsIgnoreCase("REJECTED")) {
                 throw new OurException("Leave request has already been rejected and cannot be updated");
             }
+            
+            User user = existingRequest.getUser();
+            long requestedDays = ChronoUnit.DAYS.between(updatedRequest.getStartDate(), updatedRequest.getEndDate()) + 1;
+            if (requestedDays > user.getLeaveDays()){
+                throw new OurException("Not enough leave days available to update the request");
+            }
 
             existingRequest.setStartDate(updatedRequest.getStartDate());
             existingRequest.setEndDate(updatedRequest.getEndDate());
             existingRequest.setReason(updatedRequest.getReason());
-            existingRequest.setStatus(updatedRequest.getStatus());
+            existingRequest.setStatus(updatedRequest.getStatus() == null ? "PENDING" : updatedRequest.getStatus());
 
             leaveRequestRepository.save(existingRequest);
             response.setStatus(200);
