@@ -16,6 +16,12 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
     private final IUserService userService;
 
+    @GetMapping("/my-info")
+    public ResponseEntity<ApiResponse> getMyInfo() {
+        ApiResponse response = userService.getMyInfo();
+        return ResponseEntity.status(response.getStatus()).body(response);
+    }
+
     @PutMapping("/update")
     public ResponseEntity<ApiResponse> updateUser(@RequestBody UserDTO userDTO){
         ApiResponse response = userService.updateUser(userDTO);
