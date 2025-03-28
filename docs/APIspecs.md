@@ -182,8 +182,89 @@
             }
             ```
 
+### Leave Requests APIs
 
-#### 5. Delete Leave Request By ID
+#### 1. View All Leave Requests
+- **URL**: `GET leave-requests/view`
+- **Description**: Xem tất cả yêu cầu xin nghỉ.
+- **Path variable**: int page and int size
+- **Response**:
+    - `200 OK`: View successfully.
+  ```json
+    {
+      "status": 200,
+      "message": "Fetching all leave requests successfully",
+      "leaveRequestDTOList": [
+          {
+              "id": 4,
+              "startDate": "2025-04-01",
+              "endDate": "2025-04-10",
+              "reason": "Nghỉ phép cá nhân",
+              "status": "REJECTED",
+              "userEmail": "test.clh@gmail.com"
+          },
+          {
+              "id": 5,
+              "startDate": "2025-06-18",
+              "endDate": "2025-06-22",
+              "reason": "Nghỉ phép cá nhân",
+              "status": "ACCEPTED",
+              "userEmail": "test.clh@gmail.com"
+          },
+          {
+              "id": 8,
+              "startDate": "2025-06-16",
+              "endDate": "2025-06-25",
+              "reason": "Nghỉ phép cá nhân",
+              "status": "REJECTED",
+              "userEmail": "test.clh@gmail.com"
+          }
+      ]
+    }
+  ```
+    - `200 No leave request found`
+        ```json
+          {
+            "statusCode": 200,
+            "message": "Leave request fetched successfully"     
+          }
+        ```
+    - `500 Exceptional error`
+      ```json
+      {
+         "status": 500,
+         "message": "Error fetching leave request: "     
+      }
+      ```
+
+#### 2. Accept/Reject leave request
+- **URL**: `GET leave-requests/accept/{id}` / `GET leave-requests/reject/{id}`
+- **Description**: Trả lời đơn xin nghỉ của 1 người dùng.
+- **Path variable**: long id
+- **Response**:
+    - `200 OK`: Accept/Reject successfully.
+      ```json
+      {
+          "status": 200,
+          "message": "Leave request has been handled successfully"
+      }
+      ```
+    - `404 Not found`: Leave request not found.
+      ```json
+      {
+          "status": 404,
+          "message": "Leave request fetched successfully"
+      }
+      ```
+    - `500 Exceptional error`
+      ```json
+      {
+         "status": 500,
+         "message": "Error fetching leave request: "     
+      }
+      ```
+      
+#### 3. Delete Leave Request By ID
 - **URL**: `DELETE leave-requests/delete/{leave_request_id}`
 - **Description**: Xóa leave request.
 - **Path variable**: long id
@@ -204,7 +285,7 @@
         ```
 
 
-#### 6. Employee view all its own Leave Requests
+#### 4. Employee view all its own Leave Requests
 - **URL**: `GET leave-requests/employee/view?page=0&size=5`
 - **Description**: Xem tất cả Leave Request của Employee đang đăng nhập.
   - **Response**:
@@ -241,7 +322,7 @@
         ```
 
 
-#### 7. Employee view all its own Leave Requests sorted by Dates
+#### 5. Employee view all its own Leave Requests sorted by Dates
 - **URL**: `GET leave-requests/employee/view?startDate=2025-03-01&endDate=2025-03-30&page=0&size=5`
 - **Description**: Xem tất cả Leave Request của Employee đang đăng nhập.
 - **Params**:
