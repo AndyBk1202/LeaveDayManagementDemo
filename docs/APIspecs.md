@@ -262,6 +262,13 @@
          "message": "Start date cannot be after end date"     
       }
       ```
+    - `400 Not enough leave days available`
+      ```json
+      {
+         "status": 400,
+         "message": "Not enough leave days available"     
+      }
+      ```
   - `400 User not found`
     ```json
     {
@@ -332,6 +339,13 @@
          "message": "Leave Request Not Found"     
       }
       ```
+    - `400 Not enough leave days available`
+      ```json
+      {
+         "status": 400,
+         "message": "Not enough leave days available to update the request"     
+      }
+      ```
     - `500 Exceptional error`
       ```json
       {
@@ -362,11 +376,11 @@
       ]
     }
   ```
-    - `200 No leave request found`
+    - `404 Leave Request Not Found`
         ```json
           {
-            "statusCode": 200,
-            "message": "No Leave Requests Found"     
+            "statusCode": 404,
+            "message": "Leave Request Not Found"     
           }
         ```
     - `500 Exceptional error`

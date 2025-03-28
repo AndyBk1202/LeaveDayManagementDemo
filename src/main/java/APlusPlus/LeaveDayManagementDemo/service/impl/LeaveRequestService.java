@@ -109,7 +109,7 @@ public class LeaveRequestService implements ILeaveRequestService {
             response.setStatus(200);
             response.setMessage("Leave request submitted successfully");
         } catch (OurException e) {
-            response.setStatus(401);
+            response.setStatus(400);
             response.setMessage(e.getMessage());
         } catch (Exception e) {
             response.setStatus(500);
