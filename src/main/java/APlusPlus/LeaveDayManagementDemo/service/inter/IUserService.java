@@ -7,6 +7,7 @@ import APlusPlus.LeaveDayManagementDemo.response.ApiResponse;
 import org.springframework.data.domain.Pageable;
 
 public interface IUserService {
+    public ApiResponse getMyInfo();
     public ApiResponse register(User user);
     public ApiResponse login(LoginRequest loginRequest);
     public ApiResponse updateUser(UserDTO userDTO);

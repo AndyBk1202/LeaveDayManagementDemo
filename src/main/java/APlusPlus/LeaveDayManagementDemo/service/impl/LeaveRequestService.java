@@ -164,6 +164,7 @@ public class LeaveRequestService implements ILeaveRequestService {
                             leaveRequest.getStatus(),
                             leaveRequest.getUser().getEmail()))
                     .collect(Collectors.toList());
+
             response.setCurrentPage(leaveRequests.getNumber());
             response.setTotalElements(leaveRequests.getTotalElements());
             response.setTotalPages(leaveRequests.getTotalPages());

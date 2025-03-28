@@ -68,8 +68,60 @@
        "message": "Error Occurs During User Login: "     
     }
     ```
+
+#### 1. Register user
+- **URL**: `POST /auth/register`
+- **Description**: Đăng kí tài khoản người dùng.
+- **Request Body**:
+  ```json
+  {
+     "name": "Nguyen Cong Thanh",
+     "email": "johndoe10@example.com",
+     "password": "securepassword"
+  }
+  ```
+- **Response**:
+    - `200 OK`: Register successfully.
+      ```json
+      {
+          "status": 200,
+          "message": "Register successfully"
+      }
+      ```
+    - `400 User existed`
+      ```json
+      {
+         "status": 400,
+         "message": "This username already existed, please choose another username"     
+      }
+      ```
     
 ### Users APIs
+
+#### 1. Get My Info
+- **URL**: `GET /users/my-info`
+- **Description**: Lấy thông tin người đang đăng nhập
+- **Response**:
+    - `200 OK`: Added successfully.
+      ```json
+      {
+          "status": 200,
+          "message": "My info fetched successfully",
+          "myInfoDTO": {
+              "id": 5,
+              "name": "NCT",
+              "email": "nguyencongthanh2406@gmail.com",
+              "role": "EMPLOYEE"
+          }
+      }
+      ```
+    - `404 Users not found`
+      ```json
+      {
+         "status": 404,
+         "message": "User not found"     
+      }
+      ```
 
 #### 1. Update user
 - **URL**: `PUT /users/update`
@@ -82,28 +134,28 @@
      "password": "securepassword"
   }
   ```
-  - **Response**:
-      - `200 OK`: Added successfully.
-        ```json
-        {
-            "status": 200,
-            "message": "Update user successfully",
-            "user": {
-                "id": 1,
-                "name": "Nguyen Cong Thanh",
-                "email": "johndoe10@example.com",
-                "password": "securepassword",
-                "role": "EMPLOYEE"
-            }
-        }
-        ```
-      - `404 Users existed`
-        ```json
-        {
-           "status": 404,
-           "message": "User not found"     
-        }
-        ```
+- **Response**:
+    - `200 OK`: Added successfully.
+      ```json
+      {
+          "status": 200,
+          "message": "Update user successfully",
+          "user": {
+              "id": 1,
+              "name": "Nguyen Cong Thanh",
+              "email": "johndoe10@example.com",
+              "password": "securepassword",
+              "role": "EMPLOYEE"
+          }
+      }
+      ```
+    - `404 Users not found`
+      ```json
+      {
+         "status": 404,
+         "message": "User not found"     
+      }
+      ```
 
 #### 2. Delete users
 - **URL**: `DELETE users/delete/{id}`
