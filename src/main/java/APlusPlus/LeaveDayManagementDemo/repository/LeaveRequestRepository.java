@@ -21,4 +21,7 @@ public interface LeaveRequestRepository extends JpaRepository<LeaveRequest, Long
 
     @Query(value = "SELECT * FROM leave_request l WHERE l.user_id = :userId", nativeQuery = true)
     Page<LeaveRequest> getAllByUserId(long userId, Pageable pageable);
+
+    @Query(value = "SELECT * FROM leave_request l WHERE l.user_id = :userId AND l.start_date >= :startDate AND l.start_date <= :endDate", nativeQuery = true)
+    Page<LeaveRequest> getAllByUserIdAndDateRange(long userId, LocalDate startDate, LocalDate endDate, Pageable pageable);
 }

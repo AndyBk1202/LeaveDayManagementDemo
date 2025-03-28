@@ -14,4 +14,7 @@ public interface ILeaveRequestService {
     public ApiResponse getLeaveRequestsByDateRange(LocalDate startDate, LocalDate endDate, Pageable pageable);
     public ApiResponse getLeaveRequestsByUserId(long userId, Pageable pageable);
     public ApiResponse handleRequest(long id, String status);
+    public ApiResponse deleteLeaveRequest(long id);
+    public ApiResponse getLeaveRequestByCurrentEmployee(Pageable pageable);
+    public ApiResponse getLeaveRequestByCurrentEmployeeAndDateRange(LocalDate startDate, LocalDate endDate, Pageable pageable);
 }

@@ -35,6 +35,9 @@ public class User implements UserDetails {
     String role;
     int leaveDays;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<LeaveRequest> leaveRequests;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(role));
