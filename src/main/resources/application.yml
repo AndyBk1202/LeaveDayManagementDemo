@@ -1,6 +1,6 @@
 spring:
   application:
-    name=LeaveDayManagement
+    name: LeaveDayManagement
   datasource:
     url: jdbc:mysql://mysql-15ac9fa2-hcmut-5139.c.aivencloud.com:26104/defaultdb
     username: avnadmin
