@@ -1,6 +1,7 @@
 package APlusPlus.LeaveDayManagementDemo.service.impl;
 
 import APlusPlus.LeaveDayManagementDemo.DTO.LoginRequest;
+import APlusPlus.LeaveDayManagementDemo.DTO.MyInfoDTO;
 import APlusPlus.LeaveDayManagementDemo.DTO.UserDTO;
 import APlusPlus.LeaveDayManagementDemo.Utils.JwtUtils;
 import APlusPlus.LeaveDayManagementDemo.exception.OurException;
@@ -17,6 +18,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -32,6 +34,35 @@ public class UserService implements IUserService {
     JwtUtils jwtUtils;
     PasswordEncoder passwordEncoder;
     AuthenticationManager authenticationManager;
+
+    @Override
+    public ApiResponse getMyInfo() {
+        ApiResponse response = new ApiResponse();
+        try {
+            String email = SecurityContextHolder.getContext().getAuthentication().getName();
+            Optional<User> user = userRepository.findByEmail(email);
+            if (!user.isPresent()) {
+                throw new OurException("User not found");
+            }
+            MyInfoDTO myInfoDTO = new MyInfoDTO();
+            myInfoDTO.setId(user.get().getId());
+            myInfoDTO.setName(user.get().getName());
+            myInfoDTO.setEmail(user.get().getEmail());
+            myInfoDTO.setRole(user.get().getRole());
+
+            response.setStatus(200);
+            response.setMessage("My info fetched successfully");
+            response.setMyInfoDTO(myInfoDTO);
+        } catch(OurException e){
+            response.setStatus(404);
+            response.setMessage(e.getMessage());
+        } catch (Exception e) {
+            response.setStatus(500);
+            response.setMessage("Error fetching my info: "+e.getMessage());
+        }
+        return response;
+    }
+
     @Override
     public ApiResponse register(User user) {
         ApiResponse response = new ApiResponse();
@@ -192,4 +223,6 @@ public class UserService implements IUserService {
 
         return user.get();
     }
+
+
 }
