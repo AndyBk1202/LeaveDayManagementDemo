@@ -184,7 +184,148 @@
 
 ### Leave Requests APIs
 
-#### 1. View All Leave Requests
+#### 1. Send leave requests
+- **URL**: `POST /leave-requests/send`
+- **Description**: Gửi yêu cầu nghỉ.
+- **Request Body**:
+  ```json
+  {     
+      "startDate": "2025-03-29",       
+      "endDate": "2025-03-30",       
+      "reason": "Mệt mỏi"
+  }
+  ```
+- **Response**:
+    - `200 OK`: Send successfully.
+      ```json
+      {
+          "status": 200,
+          "message": "Leave request submitted successfully"
+      }
+      ```
+    - `400 Invalid resource`
+      ```json
+      {
+         "status": 400,
+         "message": "Start date cannot be after end date"     
+      }
+      ```
+  - `400 User not found`
+    ```json
+    {
+       "status": 400,
+       "message": "User not found"     
+    }
+    ```
+  - `400 Invalid resource`
+    ```json
+    {
+       "status": 400,
+       "message": "Token is expired"     
+    }
+    ```
+  - `400 User not found`
+    ```json
+    {
+       "status": 400,
+       "message": "Something went wrong in JWT extraction"     
+    }
+    ```
+  - `500 Exceptional error`
+    ```json
+    {
+       "status": 500,
+       "message": "Error submitting leave request: "     
+    }
+    ```
+
+#### 2. Update leave requests
+- **URL**: `PUT /leave-requests/update/{id}`
+- **Description**: Cập nhật yêu cầu nghỉ.
+- **Request Body**:
+  ```json
+  {     
+      "startDate": "2025-03-29",       
+      "endDate": "2025-03-30",       
+      "reason": "Mệt mỏi",
+      "status": "PENDING"
+  }
+  ```
+- **Response**:
+    - `200 OK`: Send successfully.
+      ```json
+      {
+          "status": 200,
+          "message": "Leave request updated successfully"
+      }
+      ```
+    - `400 Status already set ACCEPTED`
+      ```json
+      {
+         "status": 400,
+         "message": "Leave request has already been accepted and cannot be updated"     
+      }
+      ```
+    - `400 Status already set REJECTED`
+      ```json
+      {
+         "status": 400,
+         "message": "Leave request has already been rejected and cannot be updated"     
+      }
+      ```
+    - `400 Leave requests not found`
+      ```json
+      {
+         "status": 400,
+         "message": "Leave Request Not Found"     
+      }
+      ```
+    - `500 Exceptional error`
+      ```json
+      {
+         "status": 500,
+         "message": "Error updating leave request: "     
+      }
+      ```
+
+#### 3. View Leave Requests By Id
+- **URL**: `GET leave-requests/view/{id}`
+- **Description**: Xem yêu cầu xin nghỉ theo id.
+- **Path variable**: long id
+- **Response**:
+    - `200 OK`: View successfully.
+  ```json
+    {
+      "status": 200,
+      "message": "Fetching all leave requests successfully",
+      "leaveRequestDTOList": [
+          {
+              "id": 4,
+              "startDate": "2025-04-01",
+              "endDate": "2025-04-10",
+              "reason": "Nghỉ phép cá nhân",
+              "status": "REJECTED",
+              "userEmail": "test.clh@gmail.com"
+          }
+      ]
+    }
+  ```
+    - `200 No leave request found`
+        ```json
+          {
+            "statusCode": 200,
+            "message": "No Leave Requests Found"     
+          }
+        ```
+    - `500 Exceptional error`
+      ```json
+      {
+         "status": 500,
+         "message": "Error fetching leave request: "     
+      }
+      ```
+
+#### 4. View All Leave Requests
 - **URL**: `GET leave-requests/view`
 - **Description**: Xem tất cả yêu cầu xin nghỉ.
 - **Path variable**: int page and int size
@@ -226,7 +367,7 @@
         ```json
           {
             "statusCode": 200,
-            "message": "Leave request fetched successfully"     
+            "message": "No Leave Requests Found"     
           }
         ```
     - `500 Exceptional error`
@@ -237,7 +378,7 @@
       }
       ```
 
-#### 2. Accept/Reject leave request
+#### 5. Accept/Reject leave request
 - **URL**: `GET leave-requests/accept/{id}` / `GET leave-requests/reject/{id}`
 - **Description**: Trả lời đơn xin nghỉ của 1 người dùng.
 - **Path variable**: long id
@@ -264,7 +405,7 @@
       }
       ```
       
-#### 3. Delete Leave Request By ID
+#### 6. Delete Leave Request By ID
 - **URL**: `DELETE leave-requests/delete/{leave_request_id}`
 - **Description**: Xóa leave request.
 - **Path variable**: long id
@@ -285,7 +426,7 @@
         ```
 
 
-#### 4. Employee view all its own Leave Requests
+#### 7. Employee view all its own Leave Requests
 - **URL**: `GET leave-requests/employee/view?page=0&size=5`
 - **Description**: Xem tất cả Leave Request của Employee đang đăng nhập.
   - **Response**:
@@ -322,7 +463,7 @@
         ```
 
 
-#### 5. Employee view all its own Leave Requests sorted by Dates
+#### 8. Employee view all its own Leave Requests sorted by Dates
 - **URL**: `GET leave-requests/employee/view?startDate=2025-03-01&endDate=2025-03-30&page=0&size=5`
 - **Description**: Xem tất cả Leave Request của Employee đang đăng nhập.
 - **Params**:
