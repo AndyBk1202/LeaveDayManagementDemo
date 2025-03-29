@@ -201,9 +201,17 @@ public class LeaveRequestService implements ILeaveRequestService {
             if (existingRequest == null) {
                 throw new OurException("Leave Request Not Found");
             }
+            //Process leave request
             existingRequest.setStatus(status);
             leaveRequestRepository.save(existingRequest);
             emailService.sendLeaveRequestStatusEmail(existingRequest.getUser().getEmail(), status);
+
+            //Process employee
+            if (status.equalsIgnoreCase("ACCEPTED")) {
+                User existingUser = existingRequest.getUser();
+                existingUser.setLeaveDays(existingUser.getLeaveDays() - (int)ChronoUnit.DAYS.between(existingRequest.getStartDate(), existingRequest.getEndDate()));
+                userRepository.save(existingUser);
+            }
 
             response.setStatus(200);
             response.setMessage("Leave request has been handled successfully");
