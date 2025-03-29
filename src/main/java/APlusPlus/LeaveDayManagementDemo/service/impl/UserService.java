@@ -3,6 +3,7 @@ package APlusPlus.LeaveDayManagementDemo.service.impl;
 import APlusPlus.LeaveDayManagementDemo.DTO.LoginRequest;
 import APlusPlus.LeaveDayManagementDemo.DTO.MyInfoDTO;
 import APlusPlus.LeaveDayManagementDemo.DTO.UserDTO;
+import APlusPlus.LeaveDayManagementDemo.DTO.UserResponseDTO;
 import APlusPlus.LeaveDayManagementDemo.Utils.JwtUtils;
 import APlusPlus.LeaveDayManagementDemo.exception.OurException;
 import APlusPlus.LeaveDayManagementDemo.model.User;
@@ -49,6 +50,7 @@ public class UserService implements IUserService {
             myInfoDTO.setName(user.get().getName());
             myInfoDTO.setEmail(user.get().getEmail());
             myInfoDTO.setRole(user.get().getRole());
+            myInfoDTO.setLeaveDays(user.get().getLeaveDays());
 
             response.setStatus(200);
             response.setMessage("My info fetched successfully");
@@ -188,19 +190,26 @@ public class UserService implements IUserService {
 
     @Override
     public ApiResponse viewAllUser(Pageable pageable) {
-        Page<User> users = userRepository.findAll(pageable);
-        List<UserDTO> userDTOList = users.getContent().stream()
-                .map(u -> new UserDTO(u.getId(), u.getName(), u.getEmail(), null))
-                .collect(Collectors.toList());
-
         ApiResponse apiResponse = new ApiResponse();
-        apiResponse.setCurrentPage(users.getNumber());
-        apiResponse.setTotalElements(users.getTotalElements());
-        apiResponse.setTotalPages(users.getTotalPages());
-        apiResponse.setUserDTOList(userDTOList);
-        apiResponse.setStatus(200);
-        apiResponse.setMessage("User found");
+        try {
+            Page<User> users = userRepository.findAll(pageable);
+            if (users == null) {
+                throw new OurException("No user found");
+            }
+            List<UserResponseDTO> userResponseDTOList = users.getContent().stream()
+                    .map(u -> new UserResponseDTO(u.getId(), u.getName(), u.getEmail(), u.getLeaveDays()))
+                    .collect(Collectors.toList());
 
+            apiResponse.setCurrentPage(users.getNumber());
+            apiResponse.setTotalElements(users.getTotalElements());
+            apiResponse.setTotalPages(users.getTotalPages());
+            apiResponse.setUserResponseDTOList(userResponseDTOList);
+            apiResponse.setStatus(200);
+            apiResponse.setMessage("List users found");
+        } catch (OurException e) {
+            apiResponse.setStatus(200);
+            apiResponse.setMessage(e.getMessage());
+        }
         return apiResponse;
     }
 

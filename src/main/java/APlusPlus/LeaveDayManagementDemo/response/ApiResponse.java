@@ -3,6 +3,7 @@ package APlusPlus.LeaveDayManagementDemo.response;
 import APlusPlus.LeaveDayManagementDemo.DTO.LeaveRequestDTO;
 import APlusPlus.LeaveDayManagementDemo.DTO.MyInfoDTO;
 import APlusPlus.LeaveDayManagementDemo.DTO.UserDTO;
+import APlusPlus.LeaveDayManagementDemo.DTO.UserResponseDTO;
 import APlusPlus.LeaveDayManagementDemo.model.LeaveRequest;
 import APlusPlus.LeaveDayManagementDemo.model.User;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -34,4 +35,5 @@ public class ApiResponse{
     List<UserDTO> userDTOList;
     List<LeaveRequestDTO> leaveRequestDTOList;
     MyInfoDTO myInfoDTO;
+    List<UserResponseDTO> userResponseDTOList;
 }
