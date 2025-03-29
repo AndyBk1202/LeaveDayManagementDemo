@@ -6,12 +6,12 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class MyInfoDTO {
+public class UserResponseDTO {
     long id;
     String name;
     String email;
-    String role;
     int leaveDays;
 }
